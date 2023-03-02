@@ -39,7 +39,7 @@ public class QuizActivity extends AppCompatActivity {
         questions.add(new Question("What is java?", "Programming Language", "normal Language", "Hypertext Language", "none", "Programming Language"));
         questions.add(new Question("What is Android?", "Programming Language", "normal Language", "Mobile AppLication ", "none", "Mobile AppLication"));
         questions.add(new Question("What is Flutter?", "Programming Language", "normal Language", "Mobile AppLication", "none", "Mobile AppLication"));
-
+        resetTimer();
         setNextQuestion();
     }
 
@@ -72,7 +72,10 @@ public class QuizActivity extends AppCompatActivity {
 
 
     void setNextQuestion(){
-        resetTimer();
+        if(timer != null)
+            timer.cancel();
+
+        timer.start();
         if(index < questions.size()){
             binding.questionCounter.setText(String.format("%d/%d", (index+1), questions.size()));
             question = questions.get(index);
@@ -112,12 +115,15 @@ public class QuizActivity extends AppCompatActivity {
             case R.id.option_2:
             case R.id.option_3:
             case R.id.option_4:
+                if(timer!=null)
+                    timer.cancel();
                 Toast.makeText(this, "Option Clicked", Toast.LENGTH_SHORT).show();
                 TextView selected = (TextView) view;
                 checkAnswer(selected);
                 break;
             case R.id.nextBtn:
                 reset();
+
                 if(index < questions.size()) {
                     index++;
                     setNextQuestion();
