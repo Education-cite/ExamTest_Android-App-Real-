@@ -26,7 +26,7 @@ public class QuizActivity extends AppCompatActivity {
     int index = 0;
 
         Question question;
-//    CountDownTimer timer;
+    CountDownTimer timer;
 //    FirebaseFirestore database;
     int correctAnswers = 0;
     @Override
@@ -44,6 +44,21 @@ public class QuizActivity extends AppCompatActivity {
     }
 
 
+    void resetTimer() {
+        timer = new CountDownTimer(30000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                binding.timer.setText(String.valueOf(millisUntilFinished/1000));
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+    }
+
+
     void showAnswer() {
         if(question.getAnswer().equals(binding.option1.getText().toString()))
             binding.option1.setBackground(getResources().getDrawable(R.drawable.option_right));
@@ -57,7 +72,9 @@ public class QuizActivity extends AppCompatActivity {
 
 
     void setNextQuestion(){
+        resetTimer();
         if(index < questions.size()){
+            binding.questionCounter.setText(String.format("%d/%d", (index+1), questions.size()));
             question = questions.get(index);
             binding.question.setText(question.getQuestion());
             binding.option1.setText(question.getOption1());
