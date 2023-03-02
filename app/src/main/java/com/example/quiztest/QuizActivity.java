@@ -25,10 +25,10 @@ public class QuizActivity extends AppCompatActivity {
     ArrayList<Question> questions;
     int index = 0;
 
-    //    Question question;
+        Question question;
 //    CountDownTimer timer;
 //    FirebaseFirestore database;
-//    int correctAnswers = 0;
+    int correctAnswers = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,17 +37,28 @@ public class QuizActivity extends AppCompatActivity {
 
         questions = new ArrayList<>();
         questions.add(new Question("What is java?", "Programming Language", "normal Language", "Hypertext Language", "none", "Programming Language"));
-        questions.add(new Question("What is Android?", "Programming Language", "normal Language", "Mobile AppLication ", "none", "Programming Language"));
-        questions.add(new Question("What is Flutter?", "Programming Language", "normal Language", "Mobile AppLication", "none", "Programming Language"));
+        questions.add(new Question("What is Android?", "Programming Language", "normal Language", "Mobile AppLication ", "none", "Mobile AppLication"));
+        questions.add(new Question("What is Flutter?", "Programming Language", "normal Language", "Mobile AppLication", "none", "Mobile AppLication"));
 
         setNextQuestion();
     }
 
 
+    void showAnswer() {
+        if(question.getAnswer().equals(binding.option1.getText().toString()))
+            binding.option1.setBackground(getResources().getDrawable(R.drawable.option_right));
+        else if(question.getAnswer().equals(binding.option2.getText().toString()))
+            binding.option2.setBackground(getResources().getDrawable(R.drawable.option_right));
+        else if(question.getAnswer().equals(binding.option3.getText().toString()))
+            binding.option3.setBackground(getResources().getDrawable(R.drawable.option_right));
+        else if(question.getAnswer().equals(binding.option4.getText().toString()))
+            binding.option4.setBackground(getResources().getDrawable(R.drawable.option_right));
+    }
+
 
     void setNextQuestion(){
         if(index < questions.size()){
-          Question  question = questions.get(index);
+            question = questions.get(index);
             binding.question.setText(question.getQuestion());
             binding.option1.setText(question.getOption1());
             binding.option2.setText(question.getOption2());
@@ -58,6 +69,26 @@ public class QuizActivity extends AppCompatActivity {
     }
 
 
+    void checkAnswer(TextView textView) {
+        String selectedAnswer = textView.getText().toString();
+        if(selectedAnswer.equals(question.getAnswer())) {
+            correctAnswers++;
+            textView.setBackground(getResources().getDrawable(R.drawable.option_right));
+        } else {
+           showAnswer();
+            textView.setBackground(getResources().getDrawable(R.drawable.option_wrong));
+        }
+    }
+
+
+
+    void reset() {
+        binding.option1.setBackground(getResources().getDrawable(R.drawable.option_unselected));
+        binding.option2.setBackground(getResources().getDrawable(R.drawable.option_unselected));
+        binding.option3.setBackground(getResources().getDrawable(R.drawable.option_unselected));
+        binding.option4.setBackground(getResources().getDrawable(R.drawable.option_unselected));
+    }
+
     public void onClick(View view){
         switch (view.getId()){
             case R.id.option_1:
@@ -65,8 +96,11 @@ public class QuizActivity extends AppCompatActivity {
             case R.id.option_3:
             case R.id.option_4:
                 Toast.makeText(this, "Option Clicked", Toast.LENGTH_SHORT).show();
+                TextView selected = (TextView) view;
+                checkAnswer(selected);
                 break;
             case R.id.nextBtn:
+                reset();
                 if(index < questions.size()) {
                     index++;
                     setNextQuestion();
