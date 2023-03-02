@@ -1,8 +1,7 @@
 package com.example.quiztest;
 
 public class User {
-
-    private String name, email, pass, referCode;
+    private String name, email, pass,profile, referCode;
     private long coins = 25;
 
     public User() {
@@ -55,11 +54,11 @@ public class User {
         this.coins = coins;
     }
 
-//    public String getProfile() {
-//        return profile;
-//    }
-//
-//    public void setProfile(String profile) {
-//        this.profile = profile;
-//    }
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
 }
