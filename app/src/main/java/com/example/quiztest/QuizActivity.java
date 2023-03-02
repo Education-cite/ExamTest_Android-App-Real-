@@ -60,6 +60,12 @@ public class QuizActivity extends AppCompatActivity {
 
     public void onClick(View view){
         switch (view.getId()){
+            case R.id.option_1:
+            case R.id.option_2:
+            case R.id.option_3:
+            case R.id.option_4:
+                Toast.makeText(this, "Option Clicked", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.nextBtn:
                 if(index < questions.size()) {
                     index++;
@@ -74,5 +80,5 @@ public class QuizActivity extends AppCompatActivity {
 
 
 
-    
+
 }
