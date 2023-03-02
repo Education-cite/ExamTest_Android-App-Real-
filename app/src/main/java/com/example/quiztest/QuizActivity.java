@@ -27,7 +27,7 @@ public class QuizActivity extends AppCompatActivity {
 
         Question question;
     CountDownTimer timer;
-//    FirebaseFirestore database;
+    FirebaseFirestore database;
     int correctAnswers = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +36,53 @@ public class QuizActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         questions = new ArrayList<>();
-        questions.add(new Question("What is java?", "Programming Language", "normal Language", "Hypertext Language", "none", "Programming Language"));
-        questions.add(new Question("What is Android?", "Programming Language", "normal Language", "Mobile AppLication ", "none", "Mobile AppLication"));
-        questions.add(new Question("What is Flutter?", "Programming Language", "normal Language", "Mobile AppLication", "none", "Mobile AppLication"));
+        database = FirebaseFirestore.getInstance();
+
+        final String catId = getIntent().getStringExtra("catId");
+
+        Random random = new Random();
+        final int rand = random.nextInt(3);
+
+        database.collection("categories")
+
+                .document(catId)
+                .collection("questions")
+                .whereGreaterThanOrEqualTo("index", rand)
+                .orderBy("index")
+                .limit(2).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if(queryDocumentSnapshots.getDocuments().size() < 2){
+
+                            database.collection("categories")
+
+                                    .document(catId)
+                                    .collection("questions")
+                                    .whereLessThanOrEqualTo("index", rand)
+                                    .orderBy("index")
+                                    .limit(2).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            for(DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                                Question question = snapshot.toObject(Question.class);
+                                                questions.add(question);
+                                            }
+                                            setNextQuestion();
+
+                                        }
+                                    });
+                        }else{
+                            for(DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                Question question = snapshot.toObject(Question.class);
+                                questions.add(question);
+                            }
+                            setNextQuestion();
+                        }
+                    }
+                });
+
         resetTimer();
-        setNextQuestion();
+
     }
 
 
@@ -124,11 +166,16 @@ public class QuizActivity extends AppCompatActivity {
             case R.id.nextBtn:
                 reset();
 
-                if(index < questions.size()) {
+                if(index <= questions.size()) {
                     index++;
                     setNextQuestion();
                 }else{
-                    Toast.makeText(this, "Finish Question", Toast.LENGTH_SHORT).show();
+
+                    Intent intent = new Intent(QuizActivity.this, ResultActivity.class);
+                    intent.putExtra("correct", correctAnswers);
+                    intent.putExtra("total", questions.size());
+                    startActivity(intent);
+                  //  Toast.makeText(this, "Finish Question", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
